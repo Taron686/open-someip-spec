@@ -103,9 +103,19 @@ needs_extra_links = [
 needs_css = 'blank.css'
 
 html_static_path = ['_static']
+templates_path = ['_templates']
 html_css_files = [
-    'css/custom.css'
+    'css/custom.css',
+    'css/dark.css'
 ]
+html_js_files = [
+    'js/theme-toggle.js',
+    'js/back-to-top.js'
+]
+html_theme_options = {
+    'fixed_sidebar': True,
+    'sidebar_width': '260px',
+}
 
 simplepdf_file_name = 'open_someip_specification.pdf'
 simplepdf_vars = {
@@ -132,4 +142,3 @@ plantuml = f'java -jar {jar_path}'
 def setup(app: Sphinx, *args, **kwargs):
     app.add_directive('bitfield_directive', BitfieldDirective)
     app.add_directive('drawsvg_directive', DrawSvgDirective)
-    app.add_css_file('./css/custom.css')
