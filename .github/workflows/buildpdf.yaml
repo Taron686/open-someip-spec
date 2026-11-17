@@ -87,7 +87,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 \
-          libharfbuzz0b libfontconfig1 libgdk-pixbuf-2.0-0 libffi-dev
+          libharfbuzz0b libfontconfig1 libgdk-pixbuf-2.0-0 libffi-dev \
+          fonts-noto-color-emoji unifont fonts-liberation fonts-freefont-ttf
+    - name: Install MS core fonts (best effort)
+      continue-on-error: true
+      run: |
+        echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | sudo debconf-set-selections
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ttf-mscorefonts-installer
     - name: Setup environment
       run: ./tools/setup.sh
     - name: Diagnose PDF toolchain
@@ -97,6 +103,11 @@ jobs:
         pip show weasyprint pydyf cffi libsass || true
         weasyprint --version || true
         dpkg -l | grep -Ei 'pango|harfbuzz|fontconfig' || true
+        fc-cache -f
+        echo "fonts covering U+24D8 (circled i):"
+        fc-list ':charset=24d8' family | sort -u || true
+        echo "fonts covering U+1F3AF (target):"
+        fc-list ':charset=1f3af' family | sort -u || true
     - name: Build PDF
       run: |
         source .venv/bin/activate
