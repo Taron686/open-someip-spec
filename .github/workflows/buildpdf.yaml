@@ -69,7 +69,7 @@ jobs:
         if-no-files-found: error
 
   build-pdf:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
     - uses: actions/checkout@v5
@@ -115,15 +115,20 @@ jobs:
         name: sphinx-pdf
         path: ./src/_build/simplepdf/open_someip_specification.pdf
         if-no-files-found: error
-    - name: Diagnose PDF crash (gdb backtrace)
+    - name: Diagnose PDF crash (faulthandler + gdb backtrace)
       if: ${{ failure() }}
       continue-on-error: true
       run: |
         source .venv/bin/activate
-        sudo apt-get install -y gdb
         test -f src/_build/simplepdf/index.html || exit 0
+        echo "=== faulthandler Python stack ==="
+        PYTHONFAULTHANDLER=1 python -m weasyprint --full-fonts \
+          src/_build/simplepdf/index.html /tmp/fh.pdf || true
+        echo "=== gdb C backtrace ==="
+        sudo apt-get install -y gdb
         PYTHONFAULTHANDLER=1 gdb -batch -ex run -ex bt --args \
-          weasyprint --full-fonts src/_build/simplepdf/index.html /tmp/dbg.pdf || true
+          python -m weasyprint --full-fonts \
+          src/_build/simplepdf/index.html /tmp/dbg.pdf || true
 
   # Deployment job
   deploy:
