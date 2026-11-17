@@ -7,8 +7,8 @@
  *   - "auto" : follow the operating system via prefers-color-scheme
  *
  * The light values match Alabaster's defaults, so the existing look is
- * preserved. The PDF (sphinx-simplepdf) uses its own templates and is not
- * affected by this file.
+ * preserved. This file is only added for non-simplepdf builders (see
+ * _add_dark_css in conf.py); the PDF theme has its own colours.
  */
 
 :root {

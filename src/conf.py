@@ -105,8 +105,7 @@ needs_css = 'blank.css'
 html_static_path = ['_static']
 templates_path = ['_templates']
 html_css_files = [
-    'css/custom.css',
-    'css/dark.css'
+    'css/custom.css'
 ]
 html_js_files = [
     'js/theme-toggle.js',
@@ -142,3 +141,11 @@ plantuml = f'java -jar {jar_path}'
 def setup(app: Sphinx, *args, **kwargs):
     app.add_directive('bitfield_directive', BitfieldDirective)
     app.add_directive('drawsvg_directive', DrawSvgDirective)
+
+    def _add_dark_css(app):
+        # dark.css is for the website only; the simplepdf theme has its own
+        # colours and must not be overridden by the dark-mode rules.
+        if app.builder.name != 'simplepdf':
+            app.add_css_file('css/dark.css')
+
+    app.connect('builder-inited', _add_dark_css)
