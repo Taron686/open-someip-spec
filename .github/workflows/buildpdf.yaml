@@ -98,6 +98,15 @@ jobs:
       run: |
         source .venv/bin/activate
         make pdf
+    - name: Diagnose PDF crash (gdb backtrace)
+      if: ${{ always() }}
+      continue-on-error: true
+      run: |
+        source .venv/bin/activate
+        sudo apt-get install -y gdb
+        test -f src/_build/simplepdf/index.html || exit 0
+        PYTHONFAULTHANDLER=1 gdb -batch -ex run -ex bt --args \
+          weasyprint --full-fonts src/_build/simplepdf/index.html /tmp/dbg.pdf || true
     - name: Archive sphinx public folder
       uses: actions/upload-artifact@v6
       with:

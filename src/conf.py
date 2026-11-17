@@ -130,6 +130,7 @@ simplepdf_vars = {
     'bottom-center-content': f'"Build: {datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day} - {version}"',
     'bottom-right-content': 'counter(page)',
 }
+simplepdf_weasyprint_flags = ['--full-fonts']
 
 exclude_patterns = ['tables/*.rst']
 
