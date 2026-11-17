@@ -69,7 +69,10 @@ jobs:
         if-no-files-found: error
 
   build-pdf:
-    runs-on: ubuntu-26.04
+    # Ubuntu 26.04 ships Pango 1.57.0, which segfaults in
+    # pango_layout_get_line_readonly (https://gitlab.gnome.org/GNOME/pango/-/issues/862).
+    # Pin to 24.04 (Pango 1.52.1) until the Pango bug is fixed.
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v5
@@ -122,12 +125,12 @@ jobs:
         source .venv/bin/activate
         test -f src/_build/simplepdf/index.html || exit 0
         echo "=== faulthandler Python stack ==="
-        PYTHONFAULTHANDLER=1 python -m weasyprint --full-fonts \
+        PYTHONFAULTHANDLER=1 python -m weasyprint \
           src/_build/simplepdf/index.html /tmp/fh.pdf || true
         echo "=== gdb C backtrace ==="
         sudo apt-get install -y gdb
         PYTHONFAULTHANDLER=1 gdb -batch -ex run -ex bt --args \
-          python -m weasyprint --full-fonts \
+          python -m weasyprint \
           src/_build/simplepdf/index.html /tmp/dbg.pdf || true
 
   # Deployment job
